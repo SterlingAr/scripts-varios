@@ -1,10 +1,14 @@
+# El script sirve para añadir nuevas resoluciones de manera interactiva 
+# En linux, puedo hacer eso usando los comandos 'cvt', 'xrandr', en este script quiero automatizar  este proceso
+#
+#
+#
+#
 
-
-
-
+#guardo en una lista los displays conectados
 connectedDisplays=($(xrandr | grep -w connected  | awk -F'[ +]' '{print $1}'))
-
-Xaxis=$(xrandr --current | grep '*' | uniq | awk '{print $1}' | cut -d 'x' -f1)
+#salvaguardo la resolución actual, guardo en 2 variables los valores actuales del eje X y Y respectivamente
+Xaxis=$(xrandr --current | grep '*' | uniq | awk '{print $1}' | cut -d 'x' -f1) #
 
 Yaxis=$(xrandr --current | grep '*' | uniq | awk '{print $1}' | cut -d 'x' -f2)
 
