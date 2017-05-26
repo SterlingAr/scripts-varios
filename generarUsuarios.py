@@ -8,13 +8,13 @@ Created on Wed May 24 10:42:38 2017
 
 import string
 import random
-from sh import passwd
 from sh import useradd
 from sh import chpasswd
 from sh import echo
 from sh import groupadd
 from sh import cat
 from sh import grep
+import os
 import csv
 
 
@@ -26,45 +26,58 @@ import csv
 def exportToCSV(listOfUsers):
     with open("users.csv",'wt') as csvfile:
         
-        spamwriter = csv.writer(csvfile, delimiter=' ',
+        
+        userWriter = csv.writer(csvfile, delimiter=' ',
                             quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        
-        for i in range(0, len(listOfUsers)):
-            
-        
-        spamwriter.writerow([listOfUsers[0], 'Password'])
+        userWriter.writerow(['usuario', 'grupo', 'contrasenha' ])
 
-exportToCSV()
+
+        for user in listOfUsers:
+            userWriter.writerow([user[0],user[1], user[2]])
+
+
+
 
 def generateUsers(quant,groupName):
     
     userRow = []
     listOfUsers = []
     
-    try:
+ 
+    checkGroup = os.popen("cat /etc/group | grep "+groupName)
+    readGroup = checkGroup.read()
+    print(readGroup)
+    
+    if readGroup == '':
         
-        
-        doesGroupExist = grep(cat("/etc/passwd"), "asdasda")
-        print(doesGroupExist)
-    except Exception:
-            
-        print("No existe el grupo, créandolo...")
-            
+        print("no existe")
         groupadd(groupName)
     
+    
+
+
     for i in range(quant+1):
+        
         userRow = []
+        
         randomUserName = ''.join(random.choices(string.ascii_lowercase + string.digits, k=4))
+        
         userName = groupName+randomUserName
+        
         randomPasswd = ''.join(random.SystemRandom().
                                choice(string.ascii_uppercase +
                                       string.digits +
                                       string.ascii_letters +
                                       string.punctuation) for _ in range(25))
         
+        print("Usuario <"+userName+"> ha sido creado y añadido al grupo <"+groupName+">")
+        
         userRow.append(userName)
+        
         userRow.append(groupName)
+        
         userRow.append(randomPasswd)
+        
         listOfUsers.append(userRow)
         
             
@@ -78,6 +91,7 @@ def generateUsers(quant,groupName):
 
 
 quant = int(input("introduce el número de usuarios: "))
+
 groupName = input("introduce el nombre del grupo: ")
 
 listOfUsers = generateUsers(quant,groupName)
